@@ -12,6 +12,17 @@ class _UTipState extends State<UTip> {
   int _personCount = 1;
 
   double _percentTip = 0;
+  double _billTotal = 0.0;
+
+  double totalPerPerson() {
+    print("$_billTotal $_percentTip $_personCount");
+    return (((_billTotal * _percentTip) + _billTotal) / _personCount)
+        .roundToDouble();
+  }
+
+  double totalTip() {
+    return (_billTotal * _percentTip);
+  }
 
   void increment() {
     setState(() {
@@ -36,6 +47,8 @@ class _UTipState extends State<UTip> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var amount = totalPerPerson();
+    var tipTotal = totalTip();
     return Scaffold(
       appBar: AppBar(
         title: const Text('UTip App'),
@@ -58,7 +71,7 @@ class _UTipState extends State<UTip> {
                     style: theme.textTheme.titleMedium,
                   ),
                   Text(
-                    '\$23.89',
+                    '\$$amount',
                     style: theme.textTheme.displaySmall,
                   ),
                 ],
@@ -81,12 +94,14 @@ class _UTipState extends State<UTip> {
                 child: Column(
                   children: [
                     BillAmount(
-                        billAmont: "100",
+                        billAmont: _billTotal.toString(),
                         onChange: (value) {
-                          print("Amount is : $value");
+                          setState(() {
+                            _billTotal = double.parse(value);
+                          });
                         }),
                     personCount(theme),
-                    tip(theme),
+                    tip(theme, tipTotal),
                     const SizedBox(height: 30.0),
                     tipScroll(theme)
                   ],
@@ -104,6 +119,8 @@ class _UTipState extends State<UTip> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Slider(
+              min: 0,
+              max: 0.5,
               divisions: 5,
               label: '${(_percentTip * 100).round()}%',
               value: _percentTip,
@@ -119,7 +136,7 @@ class _UTipState extends State<UTip> {
         ],
       );
 
-  Widget tip(ThemeData theme) {
+  Widget tip(ThemeData theme, double tip) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -128,7 +145,7 @@ class _UTipState extends State<UTip> {
           style: theme.textTheme.titleMedium,
         ),
         Text(
-          '\$20',
+          '\$$tip',
           style: theme.textTheme.titleMedium,
         ),
       ],
