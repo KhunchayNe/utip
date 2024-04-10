@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'bill_amount.dart';
 
 class UTip extends StatefulWidget {
   const UTip({super.key});
@@ -9,6 +10,8 @@ class UTip extends StatefulWidget {
 
 class _UTipState extends State<UTip> {
   int _personCount = 1;
+
+  double _percentTip = 0;
 
   void increment() {
     setState(() {
@@ -66,7 +69,7 @@ class _UTipState extends State<UTip> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               width: 100,
-              height: 250,
+              height: 300,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
@@ -77,46 +80,15 @@ class _UTipState extends State<UTip> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.attach_money),
-                          labelText: 'Bill Amount'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        print(value);
-                      },
-                    ),
-
-                    //Split Bull area
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Split',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: () => {decerment()},
-                              icon: Icon(
-                                  color: theme.colorScheme.primary,
-                                  Icons.remove),
-                            ),
-                            Text(
-                              '$_personCount',
-                              style: theme.textTheme.titleMedium,
-                            ),
-                            IconButton(
-                              onPressed: () => {increment()},
-                              icon: Icon(
-                                  color: theme.colorScheme.primary, Icons.add),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
+                    BillAmount(
+                        billAmont: "100",
+                        onChange: (value) {
+                          print("Amount is : $value");
+                        }),
+                    personCount(theme),
+                    tip(theme),
+                    const SizedBox(height: 30.0),
+                    tipScroll(theme)
                   ],
                 ),
               ),
@@ -124,6 +96,70 @@ class _UTipState extends State<UTip> {
           )
         ],
       ),
+    );
+  }
+
+  Widget tipScroll(ThemeData theme) => Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Slider(
+              divisions: 5,
+              label: '${(_percentTip * 100).round()}%',
+              value: _percentTip,
+              onChanged: (value) {
+                setState(() {
+                  _percentTip = value;
+                });
+              }),
+          Text(
+            '${(_percentTip * 100).round()}%',
+            style: theme.textTheme.titleMedium,
+          ),
+        ],
+      );
+
+  Widget tip(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Tip',
+          style: theme.textTheme.titleMedium,
+        ),
+        Text(
+          '\$20',
+          style: theme.textTheme.titleMedium,
+        ),
+      ],
+    );
+  }
+
+  Widget personCount(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Split',
+          style: theme.textTheme.titleMedium,
+        ),
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => {decerment()},
+              icon: Icon(color: theme.colorScheme.primary, Icons.remove),
+            ),
+            Text(
+              '$_personCount',
+              style: theme.textTheme.titleMedium,
+            ),
+            IconButton(
+              onPressed: () => {increment()},
+              icon: Icon(color: theme.colorScheme.primary, Icons.add),
+            ),
+          ],
+        )
+      ],
     );
   }
 }
