@@ -16,8 +16,7 @@ class _UTipState extends State<UTip> {
 
   double totalPerPerson() {
     print("$_billTotal $_percentTip $_personCount");
-    return (((_billTotal * _percentTip) + _billTotal) / _personCount)
-        .roundToDouble();
+    return (((_billTotal * _percentTip) + _billTotal) / _personCount);
   }
 
   double totalTip() {
@@ -71,7 +70,7 @@ class _UTipState extends State<UTip> {
                     style: theme.textTheme.titleMedium,
                   ),
                   Text(
-                    '\$$amount',
+                    '\$${amount.toStringAsFixed(2)}',
                     style: theme.textTheme.displaySmall,
                   ),
                 ],
@@ -145,7 +144,7 @@ class _UTipState extends State<UTip> {
           style: theme.textTheme.titleMedium,
         ),
         Text(
-          '\$$tip',
+          '\$${tip.toStringAsFixed(2)}',
           style: theme.textTheme.titleMedium,
         ),
       ],
