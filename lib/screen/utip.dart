@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:utip/providers/tip_calulator_model.dart';
 import 'bill_amount.dart';
 
 class UTip extends StatefulWidget {
@@ -9,34 +11,6 @@ class UTip extends StatefulWidget {
 }
 
 class _UTipState extends State<UTip> {
-  int _personCount = 1;
-
-  double _percentTip = 0;
-  double _billTotal = 0.0;
-
-  double totalPerPerson() {
-    print("$_billTotal $_percentTip $_personCount");
-    return (((_billTotal * _percentTip) + _billTotal) / _personCount);
-  }
-
-  double totalTip() {
-    return (_billTotal * _percentTip);
-  }
-
-  void increment() {
-    setState(() {
-      _personCount++;
-    });
-  }
-
-  void decerment() {
-    setState(() {
-      if (_personCount > 1) {
-        _personCount--;
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -46,8 +20,7 @@ class _UTipState extends State<UTip> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var amount = totalPerPerson();
-    var tipTotal = totalTip();
+    final model = Provider.of<TipCalulatorModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('UTip App'),
@@ -70,7 +43,7 @@ class _UTipState extends State<UTip> {
                     style: theme.textTheme.titleMedium,
                   ),
                   Text(
-                    '\$${amount.toStringAsFixed(2)}',
+                    '\$${model.totalPerPerson.toStringAsFixed(2)}',
                     style: theme.textTheme.displaySmall,
                   ),
                 ],
@@ -93,16 +66,15 @@ class _UTipState extends State<UTip> {
                 child: Column(
                   children: [
                     BillAmount(
-                        billAmont: _billTotal.toString(),
+                        billAmont: model.billTotal.toString(),
                         onChange: (value) {
-                          setState(() {
-                            _billTotal = double.parse(value);
-                          });
+                          model.updateBillTotal(
+                              value.isNotEmpty ? double.parse(value) : 0);
                         }),
-                    personCount(theme),
-                    tip(theme, tipTotal),
+                    personCount(theme, model),
+                    tip(theme, model),
                     const SizedBox(height: 30.0),
-                    tipScroll(theme)
+                    tipScroll(theme, model.precenTip, model)
                   ],
                 ),
               ),
@@ -113,7 +85,9 @@ class _UTipState extends State<UTip> {
     );
   }
 
-  Widget tipScroll(ThemeData theme) => Column(
+  Widget tipScroll(
+          ThemeData theme, double percenTip, TipCalulatorModel model) =>
+      Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -121,21 +95,19 @@ class _UTipState extends State<UTip> {
               min: 0,
               max: 0.5,
               divisions: 5,
-              label: '${(_percentTip * 100).round()}%',
-              value: _percentTip,
-              onChanged: (value) {
-                setState(() {
-                  _percentTip = value;
-                });
+              label: '${(model.precenTip * 100).round()}%',
+              value: model.precenTip,
+              onChanged: (double value) {
+                model.updatePercenTip(value);
               }),
           Text(
-            '${(_percentTip * 100).round()}%',
+            '${model.precenTip.round()}%',
             style: theme.textTheme.titleMedium,
           ),
         ],
       );
 
-  Widget tip(ThemeData theme, double tip) {
+  Widget tip(ThemeData theme, TipCalulatorModel model) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -144,14 +116,14 @@ class _UTipState extends State<UTip> {
           style: theme.textTheme.titleMedium,
         ),
         Text(
-          '\$${tip.toStringAsFixed(2)}',
+          '\$${model.totalTip().toStringAsFixed(2)}',
           style: theme.textTheme.titleMedium,
         ),
       ],
     );
   }
 
-  Widget personCount(ThemeData theme) {
+  Widget personCount(ThemeData theme, TipCalulatorModel model) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -162,15 +134,19 @@ class _UTipState extends State<UTip> {
         Row(
           children: [
             IconButton(
-              onPressed: () => {decerment()},
+              onPressed: () {
+                if (model.personCount > 1) {
+                  model.updatePersonCount(model.personCount - 1);
+                }
+              },
               icon: Icon(color: theme.colorScheme.primary, Icons.remove),
             ),
             Text(
-              '$_personCount',
+              model.personCount.toString(),
               style: theme.textTheme.titleMedium,
             ),
             IconButton(
-              onPressed: () => {increment()},
+              onPressed: () => {model.updatePersonCount(model.personCount + 1)},
               icon: Icon(color: theme.colorScheme.primary, Icons.add),
             ),
           ],

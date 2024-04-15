@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:utip/providers/tip_calulator_model.dart';
 import 'package:utip/screen/utip.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (BuildContext context) => TipCalulatorModel(),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
