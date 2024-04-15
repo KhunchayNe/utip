@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:utip/providers/tip_calulator_model.dart';
+import 'package:utip/widgets/toggle_theme_button.dart';
 import 'bill_amount.dart';
 
 class UTip extends StatefulWidget {
@@ -21,9 +22,13 @@ class _UTipState extends State<UTip> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     final model = Provider.of<TipCalulatorModel>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('UTip App'),
+        actions: [
+          ToggleThemeButton(),
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
